@@ -1,0 +1,584 @@
+{
+  "name": "CitePoint",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "CitePoint",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        560
+      ],
+      "id": "50f4d6c5-f727-4c11-9f18-c6014b99f81d",
+      "name": "Webhook",
+      "webhookId": "2a2b0ce1-1d76-42aa-a341-e05ec9420148"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1952,
+        192
+      ],
+      "id": "6faf5703-7505-4074-91d6-b41a3f6cd38e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Query: {{ $json.query }}\n\n#RESULTS\n\n## RESULT 1: \n- Title: {{ $json.results[0].title }}\n- URL: {{ $json.results[0].url }}\n- Content: {{ $json.results[0].content }}\n\n## RESULT 2: \n- Title: {{ $json.results[1].title }}\n- URL: {{ $json.results[1].url }}\n- Content: {{ $json.results[1].content }}\n\n## RESULT 3: \n- Title: {{ $json.results[2].title }}\n- URL: {{ $json.results[2].url }}\n- Content: {{ $json.results[2].content }}\n\n## RESULT 4: \n- Title: {{$json.results[3].title }}\n- URL: {{ $json.results[3].url }}\n- Content: {{ $json.results[3].content }}\n\n## RESULT 5: \n- Title: {{ $json.results[4].title }}\n- URL: {{ $json.results[4].url }}\n- Content: {{ $json.results[4].content }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# OVERVIEW:\n- You are a Summarizer Agent. \n- Your task is to process multiple search results and generate clear, concise summaries for each one separately.  \n\n# INSTRUCTIONS:\n- You will be given a user query and a set of search results.  \n- Summarize EACH search result individually.  \n- Do NOT merge results together — keep them distinct.  \n- Focus on the core academic or research-relevant points: contributions, key arguments, findings, or relevance.   \n- Ignore irrelevant or low-value content (ads, navigation text, generic filler).  \n- Do not fabricate information. Base summaries ONLY on the provided content.  \n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        192
+      ],
+      "id": "eb0db8a6-04b6-414a-8e0f-daf5f100a3c4",
+      "name": "Summarizer Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summary 1: \n- Title: {{ $json.output.summaries[0].title }}\n- URL: {{ $json.output.summaries[0].url }}\n- Summary: {{ $json.output.summaries[0].summary }}\n\nSummary 2: \n- Title: {{ $json.output.summaries[1].title }}\n- URL: {{ $json.output.summaries[1].url }}\n- Summary: {{ $json.output.summaries[1].summary }}\n\nSummary 3: \n- Title: {{ $json.output.summaries[1].title }}\n- URL: {{ $json.output.summaries[1].url }}\n- Summary: {{ $json.output.summaries[1].summary }}\n\nSummary 4: \n- Title: {{ $json.output.summaries[1].title }}\n- URL: {{ $json.output.summaries[1].url }}\n- Summary: {{ $json.output.summaries[1].summary }}\n\nSummary 5: \n- Title: {{ $json.output.summaries[1].title }}\n- URL: {{ $json.output.summaries[1].url }}\n- Summary: {{ $json.output.summaries[1].summary }}",
+        "options": {
+          "systemMessage": "=# OVERVIEW: \n- You are an Organizer Agent.\n- Your role is to take multiple summarized research results (with title, URL, and summary) and organize them into a research paper skeleton.\n\n# INSTRUCTIONS: \n- Each section should be bullet-pointed or in short outline form, not long paragraphs.\n- Do not fabricate content — only use what’s in the summaries.\n- You will not write full paragraphs — only structured sections and bullet points that serve as the blueprint for the final paper.\n\n# STRUCTURE: \nCreate a structured outline of a research paper with the following sections:\n\n1) Introduction\n\n2) Literature Review / Background\n- Organize the summaries into thematic groups \n- For each group, list the relevant result(s).\n\n3) Thematic Analysis / Discussion\n- Compare and contrast perspectives found in different results.\n- Highlight key contributions, gaps, and overlaps.\n\n4) Implications & Future Directions\n\n5) Conclusion\n\n6) References\n- Always reference back to the original result using its Title (and include the URL if available).\n- Add all the URLs in bulleted form\n- Do not add duplicate references."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1216,
+        192
+      ],
+      "id": "b12758b8-9422-4393-82f5-cc15408c85f9",
+      "name": "Organizer Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research Paper Outline:  {{ $json.output }}",
+        "options": {
+          "systemMessage": "=# OVERVIEW:\n- You are a Research Paper Writer Agent.\n- Your role is to take a structured research paper outline and expand it into a full draft.\n\n# INSTRUCTIONS:\n- Expand each heading and subheading into well-structured paragraphs.\n- Preserve references, links, and citations provided in the outline.\n- Do not invent sources; only elaborate on the given content.\n- Write in a professional, academic tone, suitable for research purposes.\n\n# OUTPUT FORMAT:\n- A continuous academic research paper draft in Markdown format, using the given outline as the skeleton.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1600,
+        192
+      ],
+      "id": "9d67f0a3-25c7-4919-990f-f5813fb3c814",
+      "name": "Writer Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1024,
+        544
+      ],
+      "id": "78fdf373-f2ac-45e3-87d3-98475900d28a",
+      "name": "GPT-4o-mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "SFyxKGY9rv1cN5HO",
+          "name": "OpenAI Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"Provide academic and reliable information, reports, and research articles about: {{ $json.output }}\",\n  \"auto_parameters\": false,\n  \"topic\": \"general\",\n  \"search_depth\": \"basic\",\n  \"chunks_per_source\": 3,\n  \"max_results\": 5,\n  \"include_answer\": true,\n  \"include_raw_content\": false,\n  \"include_images\": false,\n  \"include_image_descriptions\": false,\n  \"include_favicon\": false,\n  \"include_domains\": [],\n  \"exclude_domains\": [],\n  \"country\": null\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        192
+      ],
+      "id": "42168a8e-acdf-4623-a10a-9afa6bbbe62c",
+      "name": "Tavily API",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YBTnQ09HPHUNl1nU",
+          "name": "Tavily"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        544
+      ],
+      "id": "169a2656-32ec-4b07-a64c-8872943385fe",
+      "name": "GPT-4o",
+      "credentials": {
+        "openAiApi": {
+          "id": "SFyxKGY9rv1cN5HO",
+          "name": "OpenAI Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        32,
+        400
+      ],
+      "id": "b1ab852b-553d-43ff-b64b-6081ed89da7f",
+      "name": "Gemini-2.5-flash",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "fZNmWhGbc3zkvFLH",
+          "name": "Gemini Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"summaries\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"result_no\": {\n            \"type\": \"integer\",\n            \"description\": \"The result number (1, 2, 3, ...).\"\n          },\n          \"title\": {\n            \"type\": \"string\",\n            \"description\": \"The title of the source result.\"\n          },\n          \"url\": {\n            \"type\": \"string\",\n            \"description\": \"The URL of the source result.\"\n          },\n          \"summary\": {\n            \"type\": \"string\",\n            \"description\": \"A concise summary of the result content.\"\n          }\n        },\n        \"required\": [\"result_no\", \"title\", \"url\", \"summary\"]\n      }\n    }\n  },\n  \"required\": [\"summaries\"]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        384
+      ],
+      "id": "be408f28-0c95-45a8-ab57-0fe4330d4ab6",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "content": "## Topic Extractor\n- Analyzes the user’s query.  \n- Extracts the **main research topic/keywords**.  \n- Used to focus external searches for relevant material.\n",
+        "height": 512,
+        "width": 336,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "74fce61f-df61-4a4b-8e84-2f330bd96bc0",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Tavily API\n- Fetches supporting material from the web(5 documents).  \n- Retrieves recent articles, papers, and resources on the extracted topic.  \n- Provides knowledge base for the summarizer.\n",
+        "height": 512,
+        "width": 288,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        384,
+        0
+      ],
+      "id": "7861c41e-c18b-46e8-ab67-63c87d0ed1fa",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Summarizer Agent\n- Processes raw search results.  \n- Generates **concise summaries** for each of the 5 results.  \n- Filters out irrelevant or low-value content.\n",
+        "height": 512,
+        "width": 320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "f71cc5e8-5c68-40f2-9c2a-02107dd8c80f",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Organizer Agent\n- Organizes multiple summaries into a **research paper outline**.  \n- Groups related results into sections (Intro, Literature Review, Discussion, etc.).  \n- Acts as the blueprint for drafting.\n",
+        "height": 512,
+        "width": 384,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        0
+      ],
+      "id": "4b3ef561-f914-4201-9289-0e97eacaac63",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Writer Agent\n- Expands the outline into a **full research paper draft**.  \n- Writes in a professional, academic tone.  \n- Preserves references and structure from the outline.\n",
+        "height": 512,
+        "width": 352,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        0
+      ],
+      "id": "7fcc3a38-f515-482f-b935-3513f84c95d1",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Respond to Webhook\n- Sends the generated or refined research paper back to the frontend.  \n",
+        "height": 512
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        0
+      ],
+      "id": "983d4441-dbb1-4128-a8c3-5106fe778bc9",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "research",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "340ecb5d-6a6f-45ac-91a3-c0ee4adc184a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Research"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "088ba5b6-5ce3-4993-afec-4e110ec2a6a3",
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "refine",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Refine"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -272,
+        560
+      ],
+      "id": "5b53fbaa-74ce-493b-a888-a96f17effdbd",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research Body:  {{ $json.body.research_body }}\nRefinement Prompt: {{ $json.body.refinement_prompt }}",
+        "options": {
+          "systemMessage": "=#OVERVIEW: \n- You are a research paper refinement agent. \n\n#INSTRUCTIONS:\n- Always take the given research paper and the user’s refinement prompt.  \n- Apply the requested changes directly to the paper.  \n- Keep the structure clear with headings, subheadings, and bullet points when needed.  \n- Preserve all existing content unless the user specifically asks to remove or replace something.\n\n#OUTPUT:\n- Return only the full refined research paper as the output, with no extra commentary.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1600,
+        880
+      ],
+      "id": "5e8c15ad-b9bf-4e96-bb0d-68667a2128cc",
+      "name": "Refinement Agent"
+    },
+    {
+      "parameters": {
+        "content": "## Refinement Agent\n- Takes the full research draft + user’s refinement prompt.  \n- Applies requested changes (add/remove/restructure info, adjust formatting).  \n- Returns an updated draft for iterative improvements.\n",
+        "height": 496,
+        "width": 352,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        576
+      ],
+      "id": "29f3fd4a-9411-42e5-89c9-d77427bbcede",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Webhook\n- Receives requests from the frontend.  \n- Carries an `action` parameter (`research` or `refine`).  \n- Passes the request into the pipeline.\n## Switch\n- Routes the request based on action:  \n  - **Research** → Full research pipeline (Topic Extractor → Writer).  \n  - **Refine** → Sends request directly to Refinement Agent.\n",
+        "height": 480,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        256
+      ],
+      "id": "6013030b-e787-47a0-b007-0fc77ac5e3f5",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Query:  {{ $json.body.query }}",
+        "options": {
+          "systemMessage": "#OVERVIEW: \n- Your job is to analyze the \"Query\", and extract a topic for that query.\n\n#OUTPUT: \n- Only return the topic as the output, nothing else "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        192
+      ],
+      "id": "273ddf90-4359-4d52-860a-265542912ac8",
+      "name": "Topic Extractor Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarizer Agent": {
+      "main": [
+        [
+          {
+            "node": "Organizer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organizer Agent": {
+      "main": [
+        [
+          {
+            "node": "Writer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4o-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarizer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Organizer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily API": {
+      "main": [
+        [
+          {
+            "node": "Summarizer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4o": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Writer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Refinement Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini-2.5-flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Topic Extractor Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Summarizer Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Topic Extractor Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Refinement Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refinement Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Topic Extractor Agent": {
+      "main": [
+        [
+          {
+            "node": "Tavily API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6308887e-6e5b-43d2-841a-92dca47bd831",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f88e46fbe8b28b0a81221b2634f82256c32571fa99a5166c6bf0b8e316875900"
+  },
+  "id": "quDUArVm3Q47UcsZ",
+  "tags": []
+}
